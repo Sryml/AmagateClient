@@ -1,0 +1,65 @@
+name: 发布
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["*"]
+
+env:
+  # 环境变量
+  # VERSION_NAME: AmagateClient-${{ github.ref_name }}
+  PRERELEASE: 0
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write # 为 GITHUB_TOKEN 设置内容写入权限
+
+jobs:
+  release:
+    # if: ${{ github.event.inputs.target_task =='release_addon' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 打包
+        # if: ${{ github.event.inputs.target_task =='release_client' || github.event.inputs.target_task =='release_all' }}
+        run: |
+          # 创建一个包含文件的 zip 文件，排除掉特定文件或文件夹
+          cd src/AmagateClient
+
+          cp -p ../../README.md README.md
+          cp -p ../../LICENSE LICENSE
+
+          VERSION=$(cat version | tr -d '\n')
+          [[ "${VERSION:0:3}" != "dev" ]] && rm -f DEBUG || echo "PRERELEASE=1" >> $GITHUB_ENV
+          VERSION_NAME="AmagateClient-${VERSION}"
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
+
+          cd ..
+          zip -r ../${VERSION_NAME}.zip ./AmagateClient -x "__pycache__/*" "*.tmp" "*.ai"
+
+      # - name: Upload zip file as artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.VERSION_NAME }}
+      #     path: ${{ env.VERSION_NAME }}.zip
+
+      - name: 创建GitHub发布
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          # name: "${{ env.VERSION_NAME }}"
+          body: ""
+          draft: false
+          prerelease: ${{ env.PRERELEASE == 1 }}
+
+      - name: 上传发布资源
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.VERSION_NAME }}.zip
+          asset_name: ${{ env.VERSION_NAME }}.zip
+          asset_content_type: application/zip
