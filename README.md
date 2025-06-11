@@ -8,6 +8,10 @@
 
   <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/sryml/AmagateClient?style=social">
 
+<p>
+  <a href="https://deepwiki.com/Sryml/AmagateClient"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</p>
+
 </div>
 
 ## 🌟 Requirements
