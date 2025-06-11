@@ -1,0 +1,10 @@
+.note/
+.test/
+__pycache__/
+_LOG/
+
+*.pyc
+
+**/_BAT/*.bat
+# **/version
+**/*.tmp
