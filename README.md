@@ -17,3 +17,7 @@
 ## 🌟 Requirements
 
 BODLoader 2024 or above.
+
+<hr>
+
+<img src="https://raw.githubusercontent.com/Sryml/AmagateClient/refs/heads/main/Preview/AmagateClient.png" width="600" />
